@@ -172,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void goToHomeActivity(UsersModel userModel) {
         Common.currentUser = userModel; //Important,you need always assign value for it before use
-
-        //startActivity
+        startActivity(new Intent(MainActivity.this,HomeActivity.class));
+        finish();
     }
 
     private void phoneLogin() {
