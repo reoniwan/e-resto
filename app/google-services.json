@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "369160131230",
+    "firebase_url": "https://menumakanan-fbf35.firebaseio.com",
+    "project_id": "menumakanan-fbf35",
+    "storage_bucket": "menumakanan-fbf35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369160131230:android:5c03a1817b0b88da57e18f",
+        "android_client_info": {
+          "package_name": "com.frozenproject.aplikasipesanmakan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "369160131230-bv20buc673fpld8rekv6jbljd84t48ni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.frozenproject.aplikasipesanmakan",
+            "certificate_hash": "271808132b6bbd661508385139ebe10ad683311a"
+          }
+        },
+        {
+          "client_id": "369160131230-t7to9v9k9v9j56s1gsopdb5qcltm28m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYjw42X7dQ12r2HaU701LrzVlsi_VWWkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "369160131230-t7to9v9k9v9j56s1gsopdb5qcltm28m3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
