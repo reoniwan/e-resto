@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,6 +33,8 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.viewpager)
     LoopingViewPager viewPager;
 
+    LayoutAnimationController layoutAnimationController;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -42,6 +46,7 @@ public class HomeFragment extends Fragment {
             //Create Adapter
             MyPopularCategoriesAdapter adapter = new MyPopularCategoriesAdapter(getContext(),popularCategoryModels);
             recyclerViewPopular.setAdapter(adapter);
+            recyclerViewPopular.setLayoutAnimation(layoutAnimationController);
         });
         homeViewModel.getBestSellersList().observe(this,bestSellersModels -> {
             //Create Adapter
@@ -52,6 +57,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void init() {
+        layoutAnimationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_item_from_left);
         recyclerViewPopular.setHasFixedSize(true);
         recyclerViewPopular.setLayoutManager(new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false));
     }
