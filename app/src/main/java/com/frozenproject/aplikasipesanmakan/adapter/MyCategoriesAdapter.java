@@ -12,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.frozenproject.aplikasipesanmakan.R;
+import com.frozenproject.aplikasipesanmakan.callback.IRecyclerClickListener;
 import com.frozenproject.aplikasipesanmakan.common.Common;
+import com.frozenproject.aplikasipesanmakan.eventBus.CategoryClick;
 import com.frozenproject.aplikasipesanmakan.model.CategoryModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -44,6 +48,12 @@ public class MyCategoriesAdapter extends RecyclerView.Adapter<MyCategoriesAdapte
                 .load(categoryModelList.get(position).getImage())
                 .into(holder.categoryImage);
         holder.categoryName.setText(new StringBuilder(categoryModelList.get(position).getName()));
+
+        //Event
+        holder.setListener((view, pos) -> {
+            Common.categorySelected = categoryModelList.get(pos);
+            EventBus.getDefault().postSticky(new CategoryClick(true, categoryModelList.get(pos)));
+        });
     }
 
     @Override
@@ -51,15 +61,28 @@ public class MyCategoriesAdapter extends RecyclerView.Adapter<MyCategoriesAdapte
         return categoryModelList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Unbinder unbinder;
         @BindView(R.id.img_category)
         ImageView categoryImage;
         @BindView(R.id.txt_category)
         TextView categoryName;
+
+        IRecyclerClickListener listener;
+
+        public void setListener(IRecyclerClickListener listener) {
+            this.listener = listener;
+        }
+
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             unbinder = ButterKnife.bind(this,itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            listener.onItemClickListeners(view,getAdapterPosition());
         }
     }
 

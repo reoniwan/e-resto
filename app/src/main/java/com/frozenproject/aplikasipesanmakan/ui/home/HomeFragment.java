@@ -37,17 +37,20 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel.class);
+
+        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         unBinder = ButterKnife.bind(this,root);
+
         init();
+
         homeViewModel.getPopulerList().observe(this, popularCategoryModels -> {
             //Create Adapter
             MyPopularCategoriesAdapter adapter = new MyPopularCategoriesAdapter(getContext(),popularCategoryModels);
             recyclerViewPopular.setAdapter(adapter);
             recyclerViewPopular.setLayoutAnimation(layoutAnimationController);
         });
+
         homeViewModel.getBestSellersList().observe(this,bestSellersModels -> {
             //Create Adapter
             MyBestSellersAdapter adapter = new MyBestSellersAdapter(getContext(),bestSellersModels, true);

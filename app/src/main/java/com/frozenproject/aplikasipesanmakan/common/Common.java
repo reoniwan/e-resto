@@ -12,4 +12,5 @@ public class Common {
     public static final String CATEGORY = "Category";
     public static UsersModel currentUser;
 
+    public static CategoryModel categorySelected;
 }
