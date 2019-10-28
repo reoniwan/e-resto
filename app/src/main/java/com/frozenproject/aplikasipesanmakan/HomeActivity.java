@@ -2,7 +2,13 @@ package com.frozenproject.aplikasipesanmakan;
 
 import android.os.Bundle;
 
+import com.andremion.counterfab.CounterFab;
+import com.frozenproject.aplikasipesanmakan.common.Common;
+import com.frozenproject.aplikasipesanmakan.database.CartDataSource;
+import com.frozenproject.aplikasipesanmakan.database.CartDatabase;
+import com.frozenproject.aplikasipesanmakan.database.LocalDataCart;
 import com.frozenproject.aplikasipesanmakan.eventBus.CategoryClick;
+import com.frozenproject.aplikasipesanmakan.eventBus.CounterCartEvent;
 import com.frozenproject.aplikasipesanmakan.eventBus.FoodItemClick;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -28,15 +34,36 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    NavController navController;
+    private NavController navController;
+    private CartDataSource cartDataSource;
+
+    @BindView(R.id.fab)
+    CounterFab fab;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        counterCartItem();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        ButterKnife.bind(this);
+
+        cartDataSource = new LocalDataCart(CartDatabase.getInstance(this).cartDAO());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -58,6 +85,8 @@ public class HomeActivity extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        counterCartItem();
     }
 
     @Override
@@ -107,5 +136,37 @@ public class HomeActivity extends AppCompatActivity {
             navController.navigate(R.id.nav_food_detail);
 
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onCartCounter(CounterCartEvent event)
+    {
+        if (event.isSuccess())
+        {
+            counterCartItem();
+
+        }
+    }
+
+    private void counterCartItem() {
+        cartDataSource.countItemInCart(Common.currentUser.getUid())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        fab.setCount(integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(HomeActivity.this, "[COUNT CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
