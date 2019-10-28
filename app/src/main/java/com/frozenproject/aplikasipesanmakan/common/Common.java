@@ -21,9 +21,9 @@ public class Common {
     public static UsersModel currentUser;
 
     public static CategoryModel categorySelected;
-    public static FoodModel selectedFood, getUserSelectedSize, getUserSelectedAddOn;
+    public static FoodModel selectedFood;
 
-    public static Double calculateExtraPrice(List<SizeModel> userSelectedSize, List<AddOnModel> userSelectedAddOn) {
+    public static Double calculateExtraPrice(SizeModel userSelectedSize, List<AddOnModel> userSelectedAddOn) {
         Double result = 0.0;
         if (userSelectedSize == null && userSelectedAddOn == null)
             return 0.0;
@@ -35,9 +35,16 @@ public class Common {
             return result;
         } else if (userSelectedAddOn == null)
         {
-
+            return  userSelectedSize.getPrice()*1.0;
         }
-        return null;
+        else
+        {
+            //If both size and addon is select
+            result = userSelectedSize.getPrice()*1.0;
+            for (AddOnModel addOnModel:userSelectedAddOn)
+                result+=addOnModel.getPrice();
+            return result;
+        }
     }
 
     public static String formatPrice(double price) {
@@ -50,5 +57,10 @@ public class Common {
         }
         else
             return "0.00";
+     }
     }
-}
+
+
+
+
+
