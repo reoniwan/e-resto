@@ -3,7 +3,7 @@ package com.frozenproject.aplikasipesanmakan.model;
 import java.util.List;
 
 public class FoodModel {
-    private String name, image, id, desc;
+    private String name, image, id, description;
     private Long price;
     private List<AddOnModel> addon;
     private List<SizeModel> size;
@@ -35,12 +35,12 @@ public class FoodModel {
         this.id = id;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getPrice() {

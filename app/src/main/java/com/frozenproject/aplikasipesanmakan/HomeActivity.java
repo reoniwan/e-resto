@@ -3,6 +3,7 @@ package com.frozenproject.aplikasipesanmakan;
 import android.os.Bundle;
 
 import com.frozenproject.aplikasipesanmakan.eventBus.CategoryClick;
+import com.frozenproject.aplikasipesanmakan.eventBus.FoodItemClick;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -49,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_menu, R.id.nav_slideshow,
+                R.id.nav_home, R.id.nav_menu, R.id.nav_food_detail,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_food_list)
                 .setDrawerLayout(drawer)
                 .build();
@@ -94,7 +95,17 @@ public class HomeActivity extends AppCompatActivity {
         if (event.isSuccess())
         {
             navController.navigate(R.id.nav_food_list);
-            Toast.makeText(this, "Click to "+event.getCategoryModel().getName(), Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onFoodItemSelected(FoodItemClick event)
+    {
+        if (event.isSuccess())
+        {
+            navController.navigate(R.id.nav_food_detail);
+
         }
     }
 }

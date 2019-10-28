@@ -59,4 +59,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //event
     implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'com.github.andremion:counterfab:1.2.0'
+    implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
 }

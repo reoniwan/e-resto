@@ -1,6 +1,8 @@
 package com.frozenproject.aplikasipesanmakan.common;
 
 import com.frozenproject.aplikasipesanmakan.model.CategoryModel;
+import com.frozenproject.aplikasipesanmakan.model.FoodModel;
+import com.frozenproject.aplikasipesanmakan.model.PopularCategoryModel;
 import com.frozenproject.aplikasipesanmakan.model.UsersModel;
 
 public class Common {
@@ -13,4 +15,5 @@ public class Common {
     public static UsersModel currentUser;
 
     public static CategoryModel categorySelected;
+    public static FoodModel selectedFood;
 }

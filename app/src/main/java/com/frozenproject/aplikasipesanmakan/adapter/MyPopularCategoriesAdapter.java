@@ -17,12 +17,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.Glide;
 import com.frozenproject.aplikasipesanmakan.R;
+import com.frozenproject.aplikasipesanmakan.callback.IRecyclerClickListener;
 import com.frozenproject.aplikasipesanmakan.model.PopularCategoryModel;
 
 public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCategoriesAdapter.ViewHolder> {
 
     Context context;
     List<PopularCategoryModel> popularCategoryModelList;
+
 
     public MyPopularCategoriesAdapter(Context context, List<PopularCategoryModel> popularCategoryModelList) {
         this.context = context;
@@ -43,6 +45,7 @@ public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCa
                 .into(holder.categoryImage);
 
         holder.txtCategoryName.setText(popularCategoryModelList.get(position).getName());
+
     }
 
     @Override
@@ -56,9 +59,15 @@ public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCa
         @BindView(R.id.txt_category_name) TextView txtCategoryName;
         @BindView(R.id.category_image)
         CircleImageView categoryImage;
+
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             unbinder = ButterKnife.bind(this, itemView);
+
+
         }
+
+
     }
 }

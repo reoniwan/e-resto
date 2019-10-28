@@ -12,7 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.frozenproject.aplikasipesanmakan.R;
+import com.frozenproject.aplikasipesanmakan.callback.IRecyclerClickListener;
+import com.frozenproject.aplikasipesanmakan.common.Common;
+import com.frozenproject.aplikasipesanmakan.eventBus.FoodItemClick;
 import com.frozenproject.aplikasipesanmakan.model.FoodModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -48,6 +53,13 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
 
         holder.txtFoodName.setText(new StringBuilder("")
                 .append(foodModelList.get(position).getName()));
+
+
+        //Event
+        holder.setListener((view,pos)-> {
+            Common.selectedFood = foodModelList.get(pos);
+            EventBus.getDefault().postSticky(new FoodItemClick(true, foodModelList.get(pos)));
+        });
     }
 
     @Override
@@ -55,7 +67,7 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
         return foodModelList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Unbinder unbinder;
         @BindView(R.id.txt_food_name)
         TextView txtFoodName;
@@ -72,9 +84,22 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
         @BindView(R.id.img_quick_cart)
         ImageView imgQuickCart;
 
+        IRecyclerClickListener listener;
+
+
+        public void setListener(IRecyclerClickListener listener) {
+            this.listener = listener;
+        }
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             unbinder = ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            listener.onItemClickListeners(view,getAdapterPosition());
         }
     }
 }
