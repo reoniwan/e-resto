@@ -1,9 +1,15 @@
 package com.frozenproject.aplikasipesanmakan.common;
 
+import com.frozenproject.aplikasipesanmakan.model.AddOnModel;
 import com.frozenproject.aplikasipesanmakan.model.CategoryModel;
 import com.frozenproject.aplikasipesanmakan.model.FoodModel;
 import com.frozenproject.aplikasipesanmakan.model.PopularCategoryModel;
+import com.frozenproject.aplikasipesanmakan.model.SizeModel;
 import com.frozenproject.aplikasipesanmakan.model.UsersModel;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.List;
 
 public class Common {
     public static final String USER_REFERENCES = "Users";
@@ -15,5 +21,34 @@ public class Common {
     public static UsersModel currentUser;
 
     public static CategoryModel categorySelected;
-    public static FoodModel selectedFood;
+    public static FoodModel selectedFood, getUserSelectedSize, getUserSelectedAddOn;
+
+    public static Double calculateExtraPrice(List<SizeModel> userSelectedSize, List<AddOnModel> userSelectedAddOn) {
+        Double result = 0.0;
+        if (userSelectedSize == null && userSelectedAddOn == null)
+            return 0.0;
+        else if (userSelectedSize == null)
+        {
+            //if userSelectedAddon != null, we need sum price
+            for (AddOnModel addOnModel : userSelectedAddOn)
+                result+=addOnModel.getPrice();
+            return result;
+        } else if (userSelectedAddOn == null)
+        {
+
+        }
+        return null;
+    }
+
+    public static String formatPrice(double price) {
+        if (price != 0)
+        {
+            DecimalFormat df = new DecimalFormat("#,##0.00");
+            df.setRoundingMode(RoundingMode.UP);
+            String finalPrice = new StringBuilder(df.format(price)).toString();
+            return finalPrice.replace(".",",");
+        }
+        else
+            return "0.00";
+    }
 }

@@ -8,6 +8,10 @@ public class FoodModel {
     private List<AddOnModel> addon;
     private List<SizeModel> size;
 
+    //For Cart
+    private List<AddOnModel> userSelectedAddOn;
+    private SizeModel userSelectedSize;
+
     public FoodModel() {
     }
 
@@ -63,7 +67,24 @@ public class FoodModel {
         return size;
     }
 
+
     public void setSize(List<SizeModel> size) {
         this.size = size;
+    }
+
+    public List<AddOnModel> getUserSelectedAddOn() {
+        return userSelectedAddOn;
+    }
+
+    public void setUserSelectedAddOn(List<AddOnModel> userSelectedAddOn) {
+        this.userSelectedAddOn = userSelectedAddOn;
+    }
+
+    public SizeModel getUserSelectedSize() {
+        return userSelectedSize;
+    }
+
+    public void setUserSelectedSize(SizeModel userSelectedSize) {
+        this.userSelectedSize = userSelectedSize;
     }
 }

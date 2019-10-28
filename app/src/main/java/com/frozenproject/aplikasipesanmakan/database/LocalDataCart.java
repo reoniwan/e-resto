@@ -53,4 +53,9 @@ public class LocalDataCart implements CartDataSource {
     public Single<Integer> deleteCartItems(CartItem cartItem) {
         return cartDAO.deleteCartItems(cartItem);
     }
+
+    @Override
+    public Single<CartItem> getItemWithAllOptionsInCart(String uid, String foodId, String foodSize, String foodAddOn) {
+        return cartDAO.getItemWithAllOptionsInCart(uid,foodId,foodSize,foodAddOn);
+    }
 }

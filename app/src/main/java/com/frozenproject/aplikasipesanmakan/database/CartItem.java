@@ -1,13 +1,13 @@
 package com.frozenproject.aplikasipesanmakan.database;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName =  "Cart")
+@Entity(tableName =  "Cart", primaryKeys = {"uid","foodId","foodAddOn","foodSize"})
 public class CartItem {
-    @PrimaryKey
     @NonNull
     @ColumnInfo(name = "foodId")
     private String foodId;
@@ -30,12 +30,15 @@ public class CartItem {
     @ColumnInfo(name = "foodExtraPrice")
     private Double foodExtraPrice;
 
+    @NonNull
     @ColumnInfo(name = "foodAddOn")
     private String foodAddOn;
 
+    @NonNull
     @ColumnInfo(name = "foodSize")
     private String foodSize;
 
+    @NonNull
     @ColumnInfo(name = "uid")
     private String uid;
 
@@ -118,5 +121,17 @@ public class CartItem {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof CartItem))
+            return false;
+        CartItem cartItem = (CartItem)obj;
+        return cartItem.getFoodId().equals(this.foodId) &&
+                cartItem.getFoodAddOn().equals(this.foodAddOn) &&
+                cartItem.getFoodSize().equals(this.foodSize);
     }
 }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,8 +31,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -88,16 +91,82 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
             cartItem.setFoodAddOn("Default");
             cartItem.setFoodSize("Default");
 
-            compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(()-> {
-                Toast.makeText(context, "Add to Cart Success", Toast.LENGTH_SHORT).show();
-                //Here we will send a notify to HomeActivity to update counter in cart
-                EventBus.getDefault().postSticky(new CounterCartEvent(true));
-            },throwable -> {
-                Toast.makeText(context, "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
-            }));
+            cartDataSource.getItemWithAllOptionsInCart(Common.currentUser.getUid(),
+                    cartItem.getFoodId(),
+                    cartItem.getFoodSize(),
+                    cartItem.getFoodAddOn())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<CartItem>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(CartItem cartItemFromDB) {
+                            if (cartItemFromDB.equals(cartItem))
+                            {
+                                cartItemFromDB.setFoodExtraPrice(cartItem.getFoodExtraPrice());
+                                cartItemFromDB.setFoodAddOn(cartItem.getFoodAddOn());
+                                cartItemFromDB.setFoodSize(cartItem.getFoodSize());
+                                cartItemFromDB.setFoodQuantity(cartItemFromDB.getFoodQuantity() + cartItem.getFoodQuantity());
+
+                                cartDataSource.updateCartItems(cartItemFromDB)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new SingleObserver<Integer>() {
+                                            @Override
+                                            public void onSubscribe(Disposable d) {
+
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Integer integer) {
+                                                Toast.makeText(context,"Update Cart Success", Toast.LENGTH_SHORT).show();
+                                                EventBus.getDefault().postSticky(new CounterCartEvent(true));
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                Toast.makeText(context,"[UPDATE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                            else
+                            {
+                                //item not available
+                                compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(() -> {
+                                            Toast.makeText(context, "Add to Cart Success", Toast.LENGTH_SHORT).show();
+                                            EventBus.getDefault().postSticky(new CounterCartEvent(true));
+                                        },throwable -> {
+                                            Toast.makeText(context, "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }));
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            if (e.getMessage().contains("empty"))
+                            {
+                                //Default, if Cart is empty, this code will be fired
+                                compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(() -> {
+                                            Toast.makeText(context, "Add to Cart Success", Toast.LENGTH_SHORT).show();
+                                            EventBus.getDefault().postSticky(new CounterCartEvent(true));
+                                        },throwable -> {
+                                            Toast.makeText(context, "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }));
+                            }
+                            else
+                                Toast.makeText(context, "[GET CHART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
         });
     }
