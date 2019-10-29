@@ -30,15 +30,15 @@
         tools:layout="@layout/fragment_food_detail" />
 
     <fragment
-        android:id="@+id/nav_tools"
+        android:id="@+id/nav_sign_out"
         android:name="com.frozenproject.aplikasipesanmakan.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
+        android:label="@string/menu_sign_out"
         tools:layout="@layout/fragment_tools" />
 
     <fragment
-        android:id="@+id/nav_share"
-        android:name="com.frozenproject.aplikasipesanmakan.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
+        android:id="@+id/nav_cart"
+        android:name="com.frozenproject.aplikasipesanmakan.ui.cart.CartFragment"
+        android:label="@string/menu_cart"
+        tools:layout="@layout/fragment_cart" />
 
 </navigation>

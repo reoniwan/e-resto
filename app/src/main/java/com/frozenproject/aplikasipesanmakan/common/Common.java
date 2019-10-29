@@ -1,5 +1,12 @@
 package com.frozenproject.aplikasipesanmakan.common;
 
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
+import android.widget.TextView;
+
 import com.frozenproject.aplikasipesanmakan.model.AddOnModel;
 import com.frozenproject.aplikasipesanmakan.model.CategoryModel;
 import com.frozenproject.aplikasipesanmakan.model.FoodModel;
@@ -7,6 +14,7 @@ import com.frozenproject.aplikasipesanmakan.model.PopularCategoryModel;
 import com.frozenproject.aplikasipesanmakan.model.SizeModel;
 import com.frozenproject.aplikasipesanmakan.model.UsersModel;
 
+import java.lang.reflect.Type;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -58,7 +66,18 @@ public class Common {
         else
             return "0.00";
      }
+
+    public static void setSpanString(String welcome, String name, TextView textView) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(welcome);
+        SpannableString spannableString = new SpannableString(name);
+        StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+        spannableString.setSpan(boldSpan, 0, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(spannableString);
+        textView.setText(builder, TextView.BufferType.SPANNABLE);
+
     }
+}
 
 
 

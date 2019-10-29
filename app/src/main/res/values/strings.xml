@@ -15,8 +15,8 @@
     <string name="menu_feed">Feed</string>
     <string name="menu_menu">List Menu</string>
     <string name="menu_food_detail">Food Detail</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_sign_out">Sign Out</string>
+    <string name="menu_cart">Cart</string>
     <string name="menu_favorite">Favorite</string>
 
     <string name="popular_categories">Popular Categories</string>
