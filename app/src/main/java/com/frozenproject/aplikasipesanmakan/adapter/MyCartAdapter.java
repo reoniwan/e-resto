@@ -45,11 +45,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Glide.with(context)
                 .load(cartItemList.get(position)
-                .getFoodImage())
+                        .getFoodImage())
                 .into(holder.imgCart);
         holder.txtFoodName.setText(new StringBuilder(cartItemList.get(position).getFoodName()));
         holder.txtFoodPrice.setText(new StringBuilder("")
-            .append(cartItemList.get(position).getFoodPrice() + cartItemList.get(position).getFoodExtraPrice()));
+                .append(cartItemList.get(position).getFoodPrice() + cartItemList.get(position).getFoodExtraPrice()));
 
         holder.numberButton.setNumber(String.valueOf(cartItemList.get(position).getFoodQuantity()));
 
@@ -68,7 +68,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         return cartItemList.size();
     }
 
-    public class ViewHolder extends  RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private Unbinder unbinder;
 
         @BindView(R.id.img_quick_cart)

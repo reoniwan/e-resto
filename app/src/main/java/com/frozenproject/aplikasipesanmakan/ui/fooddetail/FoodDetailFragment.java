@@ -85,8 +85,8 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
     TextView foodPrice;
     @BindView(R.id.number_button)
     ElegantNumberButton numberButton;
-    @BindView(R.id.btnBeli)
-    Button btn_beli;
+    @BindView(R.id.btn_show_comments)
+    Button btnShowComments;
     @BindView(R.id.rdi_group_size)
     RadioGroup rdiGroupSize;
     @BindView(R.id.img_add_addon)
@@ -95,45 +95,41 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
     ChipGroup chipGroupUserSelectedAddOn;
 
     @OnClick(R.id.img_add_addon)
-    void onAddOnClick()
-    {
-        if(Common.selectedFood.getAddon() != null)
-        {
+    void onAddOnClick() {
+        if (Common.selectedFood.getAddon() != null) {
             displayAddOnList();         //Show all addon options
             addOnBottomSheetDialog.show();
         }
     }
 
     private void displayAddOnList() {
-        if (Common.selectedFood.getAddon().size() > 0)
-        {
+        if (Common.selectedFood.getAddon().size() > 0) {
             chip_group_addon.clearCheck(); //Clear check all views
-            chip_group_addon.removeAllViews();;
+            chip_group_addon.removeAllViews();
+            ;
 
             edt_search.addTextChangedListener(this);
             //Add all view
-            for(AddOnModel addOnModel:Common.selectedFood.getAddon())
-            {
-                    Chip chip = (Chip)getLayoutInflater().inflate(R.layout.layout_addon_item, null);
-                    chip.setText(new StringBuilder(addOnModel.getName()).append("(+Rp")
-                            .append(addOnModel.getPrice()).append(")"));
+            for (AddOnModel addOnModel : Common.selectedFood.getAddon()) {
+                Chip chip = (Chip) getLayoutInflater().inflate(R.layout.layout_addon_item, null);
+                chip.setText(new StringBuilder(addOnModel.getName()).append("(+Rp")
+                        .append(addOnModel.getPrice()).append(")"));
 
-                    chip.setOnCheckedChangeListener((compoundButton, b) -> {
-                        if(b)
-                        {
-                            if (Common.selectedFood.getUserSelectedAddOn() == null)
-                                Common.selectedFood.setUserSelectedAddOn(new ArrayList<>());
-                            Common.selectedFood.getUserSelectedAddOn().add(addOnModel);
-                        }
+                chip.setOnCheckedChangeListener((compoundButton, b) -> {
+                    if (b) {
+                        if (Common.selectedFood.getUserSelectedAddOn() == null)
+                            Common.selectedFood.setUserSelectedAddOn(new ArrayList<>());
+                        Common.selectedFood.getUserSelectedAddOn().add(addOnModel);
+                    }
 
-                    });
-                    chip_group_addon.addView(chip);
+                });
+                chip_group_addon.addView(chip);
             }
         }
     }
+
     @OnClick(R.id.btn_cart)
-    void onCartItemAdd()
-    {
+    void onCartItemAdd() {
         CartItem cartItem = new CartItem();
         cartItem.setUid(Common.currentUser.getUid());
         cartItem.setUserPhone(Common.currentUser.getPhone());
@@ -143,7 +139,7 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
         cartItem.setFoodImage(Common.selectedFood.getImage());
         cartItem.setFoodPrice(Double.valueOf(String.valueOf(Common.selectedFood.getPrice())));
         cartItem.setFoodQuantity(Integer.valueOf(numberButton.getNumber()));
-        cartItem.setFoodExtraPrice(Common.calculateExtraPrice(Common.selectedFood.getUserSelectedSize(),Common.selectedFood.getUserSelectedAddOn()));
+        cartItem.setFoodExtraPrice(Common.calculateExtraPrice(Common.selectedFood.getUserSelectedSize(), Common.selectedFood.getUserSelectedAddOn()));
 
         if (Common.selectedFood.getUserSelectedAddOn() != null)
             cartItem.setFoodAddOn(new Gson().toJson(Common.selectedFood.getUserSelectedAddOn()));
@@ -169,8 +165,7 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
 
                     @Override
                     public void onSuccess(CartItem cartItemFromDB) {
-                        if (cartItemFromDB.equals(cartItem))
-                        {
+                        if (cartItemFromDB.equals(cartItem)) {
                             cartItemFromDB.setFoodExtraPrice(cartItem.getFoodExtraPrice());
                             cartItemFromDB.setFoodAddOn(cartItem.getFoodAddOn());
                             cartItemFromDB.setFoodSize(cartItem.getFoodSize());
@@ -187,18 +182,16 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
 
                                         @Override
                                         public void onSuccess(Integer integer) {
-                                            Toast.makeText(getContext(),"Update Cart Success", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getContext(), "Update Cart Success", Toast.LENGTH_SHORT).show();
                                             EventBus.getDefault().postSticky(new CounterCartEvent(true));
                                         }
 
                                         @Override
                                         public void onError(Throwable e) {
-                                            Toast.makeText(getContext(),"[UPDATE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getContext(), "[UPDATE CART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
-                        }
-                        else
-                        {
+                        } else {
                             //item not available
                             compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
                                     .subscribeOn(Schedulers.io())
@@ -206,16 +199,15 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
                                     .subscribe(() -> {
                                         Toast.makeText(getContext(), "Add to Cart Success", Toast.LENGTH_SHORT).show();
                                         EventBus.getDefault().postSticky(new CounterCartEvent(true));
-                                    },throwable -> {
-                                        Toast.makeText(getContext(), "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }, throwable -> {
+                                        Toast.makeText(getContext(), "[CART ERROR]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                     }));
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (e.getMessage().contains("empty"))
-                        {
+                        if (e.getMessage().contains("empty")) {
                             //Default, if Cart is empty, this code will be fired
                             compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
                                     .subscribeOn(Schedulers.io())
@@ -223,12 +215,11 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
                                     .subscribe(() -> {
                                         Toast.makeText(getContext(), "Add to Cart Success", Toast.LENGTH_SHORT).show();
                                         EventBus.getDefault().postSticky(new CounterCartEvent(true));
-                                    },throwable -> {
-                                        Toast.makeText(getContext(), "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }, throwable -> {
+                                        Toast.makeText(getContext(), "[CART ERROR]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                     }));
-                        }
-                        else
-                            Toast.makeText(getContext(), "[GET CHART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(getContext(), "[GET CHART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -266,14 +257,13 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
 
     private void displayUserSelectedAddon() {
         if (Common.selectedFood.getUserSelectedAddOn() != null &&
-        Common.selectedFood.getUserSelectedAddOn().size() > 0)
-        {
+                Common.selectedFood.getUserSelectedAddOn().size() > 0) {
             chipGroupUserSelectedAddOn.removeAllViews(); //Clear all view already added
-            for(AddOnModel addOnModel : Common.selectedFood.getUserSelectedAddOn()) //Add alll available addon to list
+            for (AddOnModel addOnModel : Common.selectedFood.getUserSelectedAddOn()) //Add alll available addon to list
             {
-                Chip chip = (Chip)getLayoutInflater().inflate(R.layout.layout_chip_with_delete_icon, null);
+                Chip chip = (Chip) getLayoutInflater().inflate(R.layout.layout_chip_with_delete_icon, null);
                 chip.setText(new StringBuilder(addOnModel.getName()).append("(+Rp")
-                .append(addOnModel.getPrice()).append(")"));
+                        .append(addOnModel.getPrice()).append(")"));
                 chip.setClickable(false);
                 chip.setOnCloseIconClickListener(view -> {
                     //Remove when user select delete
@@ -283,7 +273,7 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
                 });
                 chipGroupUserSelectedAddOn.addView(chip);
             }
-        }else if (Common.selectedFood.getUserSelectedAddOn().size() == 0)
+        } else if (Common.selectedFood.getUserSelectedAddOn().size() == 0)
             chipGroupUserSelectedAddOn.removeAllViews();
     }
 
@@ -300,13 +290,12 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
                 .setTitle(Common.selectedFood.getName());
 
         //Size
-        for (SizeModel sizeModel: Common.selectedFood.getSize())
-        {
+        for (SizeModel sizeModel : Common.selectedFood.getSize()) {
             RadioButton radioButton = new RadioButton(getContext());
             radioButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b)
                     Common.selectedFood.setUserSelectedSize(sizeModel);
-                    calculateTotalPrice(); //update price
+                calculateTotalPrice(); //update price
 
             });
 
@@ -321,27 +310,26 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
             rdiGroupSize.addView(radioButton);
         }
 
-        if (rdiGroupSize.getChildCount() > 0)
-        {
-            RadioButton radioButton = (RadioButton)rdiGroupSize.getChildAt(0);
+        if (rdiGroupSize.getChildCount() > 0) {
+            RadioButton radioButton = (RadioButton) rdiGroupSize.getChildAt(0);
             radioButton.setChecked(true); //Default first select
         }
         calculateTotalPrice();
     }
 
     private void calculateTotalPrice() {
-        double totalPrice = Double.parseDouble(Common.selectedFood.getPrice().toString()), displayPrice=0.0;
+        double totalPrice = Double.parseDouble(Common.selectedFood.getPrice().toString()), displayPrice = 0.0;
         //Addon
         if (Common.selectedFood.getUserSelectedAddOn() != null &&
-        Common.selectedFood.getUserSelectedAddOn().size()>0)
-            for (AddOnModel addOnModel: Common.selectedFood.getUserSelectedAddOn())
-                totalPrice+=Double.parseDouble(addOnModel.getPrice().toString());
+                Common.selectedFood.getUserSelectedAddOn().size() > 0)
+            for (AddOnModel addOnModel : Common.selectedFood.getUserSelectedAddOn())
+                totalPrice += Double.parseDouble(addOnModel.getPrice().toString());
 
         //size
         totalPrice += Double.parseDouble(Common.selectedFood.getUserSelectedSize().getPrice().toString());
 
         displayPrice = totalPrice * (Integer.parseInt(numberButton.getNumber()));
-        displayPrice = Math.round(displayPrice*100.0/100.0);
+        displayPrice = Math.round(displayPrice * 100.0 / 100.0);
 
         foodPrice.setText(new StringBuilder("").append(Common.formatPrice(displayPrice)).toString());
 
@@ -357,17 +345,14 @@ public class FoodDetailFragment extends Fragment implements TextWatcher {
         chip_group_addon.clearCheck();
         chip_group_addon.removeAllViews();
 
-        for(AddOnModel addOnModel:Common.selectedFood.getAddon())
-        {
-            if (addOnModel.getName().toLowerCase().contains(charSequence.toString().toLowerCase()))
-            {
-                Chip chip = (Chip)getLayoutInflater().inflate(R.layout.layout_addon_item, null);
+        for (AddOnModel addOnModel : Common.selectedFood.getAddon()) {
+            if (addOnModel.getName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                Chip chip = (Chip) getLayoutInflater().inflate(R.layout.layout_addon_item, null);
                 chip.setText(new StringBuilder(addOnModel.getName()).append("(+Rp")
-                .append(addOnModel.getPrice()).append(")"));
+                        .append(addOnModel.getPrice()).append(")"));
 
                 chip.setOnCheckedChangeListener((compoundButton, b) -> {
-                    if(b)
-                    {
+                    if (b) {
                         if (Common.selectedFood.getUserSelectedAddOn() == null)
                             Common.selectedFood.setUserSelectedAddOn(new ArrayList<>());
                         Common.selectedFood.getUserSelectedAddOn().add(addOnModel);

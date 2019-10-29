@@ -2,9 +2,9 @@ package com.frozenproject.aplikasipesanmakan.model;
 
 public class AddOnModel {
     private String name;
-    private  Long price;
+    private Long price;
 
-    public AddOnModel(){
+    public AddOnModel() {
 
     }
 

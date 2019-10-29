@@ -39,7 +39,7 @@ public class MyCategoriesAdapter extends RecyclerView.Adapter<MyCategoriesAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(context)
-        .inflate(R.layout.layout_category_item, parent, false));
+                .inflate(R.layout.layout_category_item, parent, false));
     }
 
     @Override
@@ -74,27 +74,27 @@ public class MyCategoriesAdapter extends RecyclerView.Adapter<MyCategoriesAdapte
             this.listener = listener;
         }
 
-        public ViewHolder(@NonNull View itemView){
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            unbinder = ButterKnife.bind(this,itemView);
+            unbinder = ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            listener.onItemClickListeners(view,getAdapterPosition());
+            listener.onItemClickListeners(view, getAdapterPosition());
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(categoryModelList.size() == 1)
+        if (categoryModelList.size() == 1)
             return Common.DEFAULT_COLUMN_COUNT;
-        else{
+        else {
             if (categoryModelList.size() % 2 == 0)
                 return Common.DEFAULT_COLUMN_COUNT;
             else
-                return (position > 1 && position == categoryModelList.size()-1) ? Common.FULL_WIDTH_COLUMN:Common.DEFAULT_COLUMN_COUNT;
+                return (position > 1 && position == categoryModelList.size() - 1) ? Common.FULL_WIDTH_COLUMN : Common.DEFAULT_COLUMN_COUNT;
         }
     }
 }

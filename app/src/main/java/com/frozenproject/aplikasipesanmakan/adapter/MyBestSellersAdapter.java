@@ -11,7 +11,10 @@ import com.asksira.loopingviewpager.LoopingPagerAdapter;
 
 import com.bumptech.glide.Glide;
 import com.frozenproject.aplikasipesanmakan.R;
+import com.frozenproject.aplikasipesanmakan.eventBus.BestSellerItemClick;
 import com.frozenproject.aplikasipesanmakan.model.BestSellersModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -21,8 +24,10 @@ import butterknife.Unbinder;
 
 public class MyBestSellersAdapter extends LoopingPagerAdapter<BestSellersModel> {
 
-    @BindView(R.id.img_best_sellers) ImageView imgBestSellers;
-    @BindView(R.id.txt_best_sellers) TextView txtBestSellers;
+    @BindView(R.id.img_best_sellers)
+    ImageView imgBestSellers;
+    @BindView(R.id.txt_best_sellers)
+    TextView txtBestSellers;
 
     Unbinder unbinder;
 
@@ -32,18 +37,22 @@ public class MyBestSellersAdapter extends LoopingPagerAdapter<BestSellersModel> 
 
     @Override
     protected View inflateView(int viewType, ViewGroup container, int listPosition) {
-        return LayoutInflater.from(context).inflate(R.layout.layout_best_sellers,container,false);
+        return LayoutInflater.from(context).inflate(R.layout.layout_best_sellers, container, false);
     }
 
     @Override
     protected void bindView(View convertView, int listPosition, int viewType) {
-        unbinder = ButterKnife.bind(this,convertView);
+        unbinder = ButterKnife.bind(this, convertView);
         //get data image and text
         Glide.with(convertView)
                 .load(itemList.get(listPosition).getImage())
                 .into(imgBestSellers);
 
         txtBestSellers.setText(itemList.get(listPosition).getName());
+
+        convertView.setOnClickListener(view -> {
+            EventBus.getDefault().postSticky(new BestSellerItemClick(itemList.get(listPosition)));
+        });
 
     }
 }

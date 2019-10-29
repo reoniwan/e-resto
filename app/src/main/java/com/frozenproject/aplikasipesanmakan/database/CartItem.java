@@ -6,7 +6,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName =  "Cart", primaryKeys = {"uid","foodId","foodAddOn","foodSize"})
+@Entity(tableName = "Cart", primaryKeys = {"uid", "foodId", "foodAddOn", "foodSize"})
 public class CartItem {
     @NonNull
     @ColumnInfo(name = "foodId")
@@ -129,7 +129,7 @@ public class CartItem {
             return true;
         if (!(obj instanceof CartItem))
             return false;
-        CartItem cartItem = (CartItem)obj;
+        CartItem cartItem = (CartItem) obj;
         return cartItem.getFoodId().equals(this.foodId) &&
                 cartItem.getFoodAddOn().equals(this.foodAddOn) &&
                 cartItem.getFoodSize().equals(this.foodSize);

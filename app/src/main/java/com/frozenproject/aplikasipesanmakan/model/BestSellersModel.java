@@ -1,7 +1,7 @@
 package com.frozenproject.aplikasipesanmakan.model;
 
 public class BestSellersModel {
-    private String menu_id,food_id,name,image;
+    private String menu_id, food_id, name, image;
 
     public BestSellersModel() {
     }

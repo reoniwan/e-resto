@@ -72,7 +72,7 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
 
 
         //Event
-        holder.setListener((view,pos)-> {
+        holder.setListener((view, pos) -> {
             Common.selectedFood = foodModelList.get(pos);
             EventBus.getDefault().postSticky(new FoodItemClick(true, foodModelList.get(pos)));
         });
@@ -105,8 +105,7 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
 
                         @Override
                         public void onSuccess(CartItem cartItemFromDB) {
-                            if (cartItemFromDB.equals(cartItem))
-                            {
+                            if (cartItemFromDB.equals(cartItem)) {
                                 cartItemFromDB.setFoodExtraPrice(cartItem.getFoodExtraPrice());
                                 cartItemFromDB.setFoodAddOn(cartItem.getFoodAddOn());
                                 cartItemFromDB.setFoodSize(cartItem.getFoodSize());
@@ -123,18 +122,16 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
 
                                             @Override
                                             public void onSuccess(Integer integer) {
-                                                Toast.makeText(context,"Update Cart Success", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "Update Cart Success", Toast.LENGTH_SHORT).show();
                                                 EventBus.getDefault().postSticky(new CounterCartEvent(true));
                                             }
 
                                             @Override
                                             public void onError(Throwable e) {
-                                                Toast.makeText(context,"[UPDATE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "[UPDATE CART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
-                            }
-                            else
-                            {
+                            } else {
                                 //item not available
                                 compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
                                         .subscribeOn(Schedulers.io())
@@ -142,16 +139,15 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
                                         .subscribe(() -> {
                                             Toast.makeText(context, "Add to Cart Success", Toast.LENGTH_SHORT).show();
                                             EventBus.getDefault().postSticky(new CounterCartEvent(true));
-                                        },throwable -> {
-                                            Toast.makeText(context, "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }, throwable -> {
+                                            Toast.makeText(context, "[CART ERROR]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                         }));
                             }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            if (e.getMessage().contains("empty"))
-                            {
+                            if (e.getMessage().contains("empty")) {
                                 //Default, if Cart is empty, this code will be fired
                                 compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
                                         .subscribeOn(Schedulers.io())
@@ -159,12 +155,11 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
                                         .subscribe(() -> {
                                             Toast.makeText(context, "Add to Cart Success", Toast.LENGTH_SHORT).show();
                                             EventBus.getDefault().postSticky(new CounterCartEvent(true));
-                                        },throwable -> {
-                                            Toast.makeText(context, "[CART ERROR]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }, throwable -> {
+                                            Toast.makeText(context, "[CART ERROR]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                         }));
-                            }
-                            else
-                                Toast.makeText(context, "[GET CHART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            } else
+                                Toast.makeText(context, "[GET CHART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -208,7 +203,7 @@ public class MyFoodListAdapter extends RecyclerView.Adapter<MyFoodListAdapter.Vi
 
         @Override
         public void onClick(View view) {
-            listener.onItemClickListeners(view,getAdapterPosition());
+            listener.onItemClickListeners(view, getAdapterPosition());
         }
     }
 }

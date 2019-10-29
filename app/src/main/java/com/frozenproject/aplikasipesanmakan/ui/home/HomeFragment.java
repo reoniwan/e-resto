@@ -40,20 +40,20 @@ public class HomeFragment extends Fragment {
 
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        unBinder = ButterKnife.bind(this,root);
+        unBinder = ButterKnife.bind(this, root);
 
         init();
 
         homeViewModel.getPopulerList().observe(this, popularCategoryModels -> {
             //Create Adapter
-            MyPopularCategoriesAdapter adapter = new MyPopularCategoriesAdapter(getContext(),popularCategoryModels);
+            MyPopularCategoriesAdapter adapter = new MyPopularCategoriesAdapter(getContext(), popularCategoryModels);
             recyclerViewPopular.setAdapter(adapter);
             recyclerViewPopular.setLayoutAnimation(layoutAnimationController);
         });
 
-        homeViewModel.getBestSellersList().observe(this,bestSellersModels -> {
+        homeViewModel.getBestSellersList().observe(this, bestSellersModels -> {
             //Create Adapter
-            MyBestSellersAdapter adapter = new MyBestSellersAdapter(getContext(),bestSellersModels, true);
+            MyBestSellersAdapter adapter = new MyBestSellersAdapter(getContext(), bestSellersModels, true);
             viewPager.setAdapter(adapter);
         });
         return root;
@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
     private void init() {
         layoutAnimationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_item_from_left);
         recyclerViewPopular.setHasFixedSize(true);
-        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false));
+        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
     }
 
     @Override

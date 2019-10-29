@@ -19,7 +19,7 @@ public interface CartDAO {
     Flowable<List<CartItem>> getAllCart(String uid);
 
     @Query("SELECT SUM(foodQuantity) from Cart WHERE uid=:uid")
-    Single<Integer>countItemInCart(String uid);
+    Single<Integer> countItemInCart(String uid);
 
     @Query("SELECT SUM((foodPrice+foodExtraPrice) * foodQuantity) FROM cart WHERE uid=:uid")
     Single<Double> sumPriceInCart(String uid);

@@ -9,10 +9,15 @@ import com.frozenproject.aplikasipesanmakan.common.Common;
 import com.frozenproject.aplikasipesanmakan.database.CartDataSource;
 import com.frozenproject.aplikasipesanmakan.database.CartDatabase;
 import com.frozenproject.aplikasipesanmakan.database.LocalDataCart;
+import com.frozenproject.aplikasipesanmakan.eventBus.BestSellerItemClick;
 import com.frozenproject.aplikasipesanmakan.eventBus.CategoryClick;
 import com.frozenproject.aplikasipesanmakan.eventBus.CounterCartEvent;
 import com.frozenproject.aplikasipesanmakan.eventBus.FoodItemClick;
 import com.frozenproject.aplikasipesanmakan.eventBus.HideFABCart;
+import com.frozenproject.aplikasipesanmakan.eventBus.PopularCategoryClick;
+import com.frozenproject.aplikasipesanmakan.model.BestSellersModel;
+import com.frozenproject.aplikasipesanmakan.model.CategoryModel;
+import com.frozenproject.aplikasipesanmakan.model.FoodModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,6 +33,10 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -44,6 +53,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dmax.dialog.SpotsDialog;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -55,6 +65,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private NavController navController;
     private CartDataSource cartDataSource;
     private DrawerLayout drawer;
+
+    android.app.AlertDialog dialog;
 
     @BindView(R.id.fab)
     CounterFab fab;
@@ -69,6 +81,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        dialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
 
         ButterKnife.bind(this);
 
@@ -160,6 +174,144 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (event.isSuccess())
         {
             counterCartItem();
+
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPopularItemClick(PopularCategoryClick event)
+    {
+        if (event.getPopularCategoryModel() != null)
+        {
+            dialog.show();
+
+            FirebaseDatabase.getInstance()
+                    .getReference("Category")
+                    .child(event.getPopularCategoryModel().getMenu_id())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists())
+                            {
+                                Common.categorySelected = dataSnapshot.getValue(CategoryModel.class);
+
+                                //Load Database
+                                FirebaseDatabase.getInstance()
+                                        .getReference("Category")
+                                        .child(event.getPopularCategoryModel().getMenu_id())
+                                        .child("foods")
+                                        .orderByChild("id")
+                                        .equalTo(event.getPopularCategoryModel().getFood_id())
+                                        .limitToLast(1)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if(dataSnapshot.exists())
+                                                {
+                                                    for(DataSnapshot itemSnapshot:dataSnapshot.getChildren())
+                                                    {
+                                                        Common.selectedFood = itemSnapshot.getValue(FoodModel.class);
+
+                                                    }
+
+                                                    navController.navigate(R.id.nav_food_detail);
+                                                }
+                                                else
+                                                {
+                                                    Toast.makeText(HomeActivity.this, "Items doesn't exists", Toast.LENGTH_SHORT).show();
+                                                }
+                                                dialog.dismiss();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                dialog.dismiss();
+                                                Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                            else
+                            {
+                                dialog.dismiss();
+                                Toast.makeText(HomeActivity.this, "Item doesn't exists!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            dialog.dismiss();
+                            Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onBestSellerItemClick(BestSellerItemClick event)
+    {
+        if (event.getBestSellersModel() != null)
+        {
+            dialog.show();
+
+            FirebaseDatabase.getInstance()
+                    .getReference("Category")
+                    .child(event.getBestSellersModel().getMenu_id())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists())
+                            {
+                                Common.categorySelected = dataSnapshot.getValue(CategoryModel.class);
+
+                                //Load Database
+                                FirebaseDatabase.getInstance()
+                                        .getReference("Category")
+                                        .child(event.getBestSellersModel().getMenu_id())
+                                        .child("foods")
+                                        .orderByChild("id")
+                                        .equalTo(event.getBestSellersModel().getFood_id())
+                                        .limitToLast(1)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if(dataSnapshot.exists())
+                                                {
+                                                    for(DataSnapshot itemSnapshot:dataSnapshot.getChildren())
+                                                    {
+                                                        Common.selectedFood = itemSnapshot.getValue(FoodModel.class);
+
+                                                    }
+
+                                                    navController.navigate(R.id.nav_food_detail);
+                                                }
+                                                else
+                                                {
+                                                    Toast.makeText(HomeActivity.this, "Items doesn't exists", Toast.LENGTH_SHORT).show();
+                                                }
+                                                dialog.dismiss();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                dialog.dismiss();
+                                                Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                            else
+                            {
+                                dialog.dismiss();
+                                Toast.makeText(HomeActivity.this, "Item doesn't exists!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            dialog.dismiss();
+                            Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
         }
     }

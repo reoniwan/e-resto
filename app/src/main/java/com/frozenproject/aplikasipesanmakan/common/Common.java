@@ -35,37 +35,31 @@ public class Common {
         Double result = 0.0;
         if (userSelectedSize == null && userSelectedAddOn == null)
             return 0.0;
-        else if (userSelectedSize == null)
-        {
+        else if (userSelectedSize == null) {
             //if userSelectedAddon != null, we need sum price
             for (AddOnModel addOnModel : userSelectedAddOn)
-                result+=addOnModel.getPrice();
+                result += addOnModel.getPrice();
             return result;
-        } else if (userSelectedAddOn == null)
-        {
-            return  userSelectedSize.getPrice()*1.0;
-        }
-        else
-        {
+        } else if (userSelectedAddOn == null) {
+            return userSelectedSize.getPrice() * 1.0;
+        } else {
             //If both size and addon is select
-            result = userSelectedSize.getPrice()*1.0;
-            for (AddOnModel addOnModel:userSelectedAddOn)
-                result+=addOnModel.getPrice();
+            result = userSelectedSize.getPrice() * 1.0;
+            for (AddOnModel addOnModel : userSelectedAddOn)
+                result += addOnModel.getPrice();
             return result;
         }
     }
 
     public static String formatPrice(double price) {
-        if (price != 0)
-        {
+        if (price != 0) {
             DecimalFormat df = new DecimalFormat("#,##0.00");
             df.setRoundingMode(RoundingMode.UP);
             String finalPrice = new StringBuilder(df.format(price)).toString();
-            return finalPrice.replace(".",",");
-        }
-        else
+            return finalPrice.replace(".", ",");
+        } else
             return "0.00";
-     }
+    }
 
     public static void setSpanString(String welcome, String name, TextView textView) {
         SpannableStringBuilder builder = new SpannableStringBuilder();

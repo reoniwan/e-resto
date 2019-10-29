@@ -31,7 +31,7 @@ public class LocalDataCart implements CartDataSource {
 
     @Override
     public Single<CartItem> getItemInCart(String foodId, String uid) {
-        return cartDAO.getItemInCart(foodId,uid);
+        return cartDAO.getItemInCart(foodId, uid);
     }
 
     @Override
@@ -56,6 +56,6 @@ public class LocalDataCart implements CartDataSource {
 
     @Override
     public Single<CartItem> getItemWithAllOptionsInCart(String uid, String foodId, String foodSize, String foodAddOn) {
-        return cartDAO.getItemWithAllOptionsInCart(uid,foodId,foodSize,foodAddOn);
+        return cartDAO.getItemWithAllOptionsInCart(uid, foodId, foodSize, foodAddOn);
     }
 }

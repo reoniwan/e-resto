@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -18,7 +20,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import com.bumptech.glide.Glide;
 import com.frozenproject.aplikasipesanmakan.R;
 import com.frozenproject.aplikasipesanmakan.callback.IRecyclerClickListener;
+import com.frozenproject.aplikasipesanmakan.eventBus.PopularCategoryClick;
 import com.frozenproject.aplikasipesanmakan.model.PopularCategoryModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCategoriesAdapter.ViewHolder> {
 
@@ -35,7 +40,7 @@ public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCa
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(context)
-        .inflate(R.layout.layout_popular_categories_item, parent, false));
+                .inflate(R.layout.layout_popular_categories_item, parent, false));
     }
 
     @Override
@@ -46,6 +51,10 @@ public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCa
 
         holder.txtCategoryName.setText(popularCategoryModelList.get(position).getName());
 
+        holder.setListener((view, pos) -> {
+            EventBus.getDefault().postSticky(new PopularCategoryClick(popularCategoryModelList.get(pos)));
+        });
+
     }
 
     @Override
@@ -53,21 +62,33 @@ public class MyPopularCategoriesAdapter extends RecyclerView.Adapter<MyPopularCa
         return popularCategoryModelList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Unbinder unbinder;
 
-        @BindView(R.id.txt_category_name) TextView txtCategoryName;
+        @BindView(R.id.txt_category_name)
+        TextView txtCategoryName;
         @BindView(R.id.category_image)
         CircleImageView categoryImage;
 
+        IRecyclerClickListener listener;
+
+        public void setListener(IRecyclerClickListener listener) {
+            this.listener = listener;
+
+        }
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             unbinder = ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
 
 
         }
 
 
+        @Override
+        public void onClick(View view) {
+            listener.onItemClickListeners(view, getAdapterPosition());
+        }
     }
 }

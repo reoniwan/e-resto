@@ -48,7 +48,7 @@ public class FoodListFragment extends Fragment {
         initViews();
 
         foodListViewModel.getMutableLiveDataFoodList().observe(this, foodModels -> {
-            adapter = new MyFoodListAdapter(getContext(),foodModels);
+            adapter = new MyFoodListAdapter(getContext(), foodModels);
             recyclerFoodList.setAdapter(adapter);
             recyclerFoodList.setLayoutAnimation(layoutAnimationController);
         });
@@ -56,7 +56,7 @@ public class FoodListFragment extends Fragment {
     }
 
     private void initViews() {
-        ((AppCompatActivity)getActivity())
+        ((AppCompatActivity) getActivity())
                 .getSupportActionBar()
                 .setTitle(Common.categorySelected.getName());
 
