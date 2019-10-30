@@ -380,7 +380,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void signOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Signout")
-                .setMessage("Do you really want to sig out?")
+                .setMessage("Do you really want to sign out?")
                 .setNegativeButton("CANCEL", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
                 }).setPositiveButton("OK", (dialogInterface, i) -> {
