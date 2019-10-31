@@ -21,6 +21,7 @@ import com.frozenproject.aplikasipesanmakan.remote.ICloudFunctions;
 import com.frozenproject.aplikasipesanmakan.remote.RetrofitCloudClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +39,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
+import com.google.firebase.analytics.FirebaseAnalytics.Event;
+import com.google.firebase.analytics.FirebaseAnalytics.Param;
+
 public class MainActivity extends AppCompatActivity {
 
     private static int APP_REQUEST_CODE = 9696;
@@ -49,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference userRef;
     private List<AuthUI.IdpConfig> providers;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onStart() {
@@ -68,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         init();
     }
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
-                            Toast.makeText(MainActivity.this, "You already registed", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "You already registed", Toast.LENGTH_SHORT).show();
 
                             UsersModel usersModel = dataSnapshot.getValue(UsersModel.class);
 
@@ -117,9 +125,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         dialog.dismiss();
-                        Toast.makeText(MainActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(MainActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, user.getUid());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, user.getDisplayName());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     private void showRegisterDialog(FirebaseUser user) {
@@ -138,6 +152,10 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(itemView);
         builder.setNegativeButton("CANCEL", (dialogInterface, i) -> {
             dialogInterface.dismiss();
+            startActivityForResult(AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers).build(),
+                    APP_REQUEST_CODE);
         });
         builder.setPositiveButton("REGISTER", (dialogInterface, i) -> {
             if (TextUtils.isEmpty(etName.getText().toString())) {
@@ -168,6 +186,12 @@ public class MainActivity extends AppCompatActivity {
 
         androidx.appcompat.app.AlertDialog dialog = builder.create();
         dialog.show();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, user.getUid());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, user.getDisplayName());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
     }
 
     private void goToHomeActivity(UsersModel userModel) {

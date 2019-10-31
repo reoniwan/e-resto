@@ -32,7 +32,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -59,12 +61,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import com.google.firebase.analytics.FirebaseAnalytics.Event;
+import com.google.firebase.analytics.FirebaseAnalytics.Param;
+
+import java.util.ArrayList;
+
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavController navController;
     private CartDataSource cartDataSource;
     private DrawerLayout drawer;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     android.app.AlertDialog dialog;
 
@@ -81,6 +90,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         dialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
 
@@ -95,6 +105,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -111,10 +123,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         View headerView = navigationView.getHeaderView(0);
         TextView txtUser = headerView.findViewById(R.id.txt_user);
-        Common.setSpanString("Welcome ", Common.currentUser.getName(),txtUser);
+        Common.setSpanString("Welcome ", Common.currentUser.getName(), txtUser);
 
         counterCartItem();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,13 +145,46 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
     //event bus
 
 
     @Override
     protected void onStart() {
         EventBus.getDefault().register(this);
+        // Define products with relevant parameters
+
+        Bundle product1 = new Bundle();
+        product1.putString(Param.ITEM_ID, "nasi_01");  // ITEM_ID or ITEM_NAME is required
+        product1.putString(Param.ITEM_NAME, "NASI GORENG");
+        product1.putString(Param.ITEM_CATEGORY, "ANEKA NASI");
+        product1.putDouble(Param.PRICE, 15000);
+        product1.putString(Param.CURRENCY, "IDR");
+        product1.putLong(Param.INDEX, 1);     // Position of the item in the list
+
+        Bundle product2 = new Bundle();
+        product2.putString(Param.ITEM_ID, "sapi_01");
+        product2.putString(Param.ITEM_NAME, "RENDANG");
+        product2.putString(Param.ITEM_CATEGORY, "ANEKA NASI");
+        product2.putDouble(Param.PRICE, 15000);
+        product2.putString(Param.CURRENCY, "IDR");
+        product2.putLong(Param.INDEX, 2);
+
+// Prepare ecommerce bundle
+
+        ArrayList items = new ArrayList();
+        items.add(product1);
+        items.add(product2);
+
+        Bundle ecommerceBundle = new Bundle();
+        ecommerceBundle.putParcelableArrayList("items", items);
+
+// Set relevant bundle-level parameters
+
+        ecommerceBundle.putString(Param.ITEM_LIST, "Search Results"); // List name
+
+// Log view_search_results or view_item_list event with ecommerce bundle
+
+        mFirebaseAnalytics.logEvent(Event.VIEW_SEARCH_RESULTS, ecommerceBundle);
         super.onStart();
     }
 
@@ -149,40 +195,70 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onCategorySelected(CategoryClick event)
-    {
-        if (event.isSuccess())
-        {
+    public void onCategorySelected(CategoryClick event) {
+        if (event.isSuccess()) {
             navController.navigate(R.id.nav_food_list);
 
         }
+
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onFoodItemSelected(FoodItemClick event)
-    {
-        if (event.isSuccess())
-        {
+    public void onFoodItemSelected(FoodItemClick event) {
+        if (event.isSuccess()) {
             navController.navigate(R.id.nav_food_detail);
 
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        // Define product with relevant parameters
+
+        Bundle product1 = new Bundle();
+        product1.putString(Param.ITEM_ID, "nasi_01");  // ITEM_ID or ITEM_NAME is required
+        product1.putString(Param.ITEM_NAME, "NASI GORENG");
+        product1.putString(Param.ITEM_CATEGORY, "ANEKA NASI");
+        product1.putDouble(Param.PRICE, 15000);
+        product1.putString(Param.CURRENCY, "IDR");
+        product1.putLong(Param.INDEX, 1);     // Position of the item in the list
+
+        // Prepare ecommerce bundle
+
+        Bundle ecommerceBundle = new Bundle();
+        ecommerceBundle.putBundle("items", product1);
+
+        // Set relevant action-level parameters
+
+        mFirebaseAnalytics.logEvent( Event.VIEW_ITEM, ecommerceBundle );
+
+        // Log select_content event with ecommerce bundle
+
+        mFirebaseAnalytics.logEvent(Event.SELECT_CONTENT, ecommerceBundle);
+
     }
 
+
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onCartCounter(CounterCartEvent event)
-    {
-        if (event.isSuccess())
-        {
+    public void onCartCounter(CounterCartEvent event) {
+        if (event.isSuccess()) {
             counterCartItem();
 
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onPopularItemClick(PopularCategoryClick event)
-    {
-        if (event.getPopularCategoryModel() != null)
-        {
+    public void onPopularItemClick(PopularCategoryClick event) {
+        if (event.getPopularCategoryModel() != null) {
             dialog.show();
 
             FirebaseDatabase.getInstance()
@@ -191,8 +267,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists())
-                            {
+                            if (dataSnapshot.exists()) {
                                 Common.categorySelected = dataSnapshot.getValue(CategoryModel.class);
 
                                 //Load Database
@@ -206,18 +281,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if(dataSnapshot.exists())
-                                                {
-                                                    for(DataSnapshot itemSnapshot:dataSnapshot.getChildren())
-                                                    {
+                                                if (dataSnapshot.exists()) {
+                                                    for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
                                                         Common.selectedFood = itemSnapshot.getValue(FoodModel.class);
 
                                                     }
 
                                                     navController.navigate(R.id.nav_food_detail);
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     Toast.makeText(HomeActivity.this, "Items doesn't exists", Toast.LENGTH_SHORT).show();
                                                 }
                                                 dialog.dismiss();
@@ -226,12 +297,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError databaseError) {
                                                 dialog.dismiss();
-                                                Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(HomeActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
-                            }
-                            else
-                            {
+                            } else {
                                 dialog.dismiss();
                                 Toast.makeText(HomeActivity.this, "Item doesn't exists!", Toast.LENGTH_SHORT).show();
                             }
@@ -240,18 +309,20 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             dialog.dismiss();
-                            Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(HomeActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
 
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onBestSellerItemClick(BestSellerItemClick event)
-    {
-        if (event.getBestSellersModel() != null)
-        {
+    public void onBestSellerItemClick(BestSellerItemClick event) {
+        if (event.getBestSellersModel() != null) {
             dialog.show();
 
             FirebaseDatabase.getInstance()
@@ -260,8 +331,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists())
-                            {
+                            if (dataSnapshot.exists()) {
                                 Common.categorySelected = dataSnapshot.getValue(CategoryModel.class);
 
                                 //Load Database
@@ -275,18 +345,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if(dataSnapshot.exists())
-                                                {
-                                                    for(DataSnapshot itemSnapshot:dataSnapshot.getChildren())
-                                                    {
+                                                if (dataSnapshot.exists()) {
+                                                    for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
                                                         Common.selectedFood = itemSnapshot.getValue(FoodModel.class);
 
                                                     }
 
                                                     navController.navigate(R.id.nav_food_detail);
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     Toast.makeText(HomeActivity.this, "Items doesn't exists", Toast.LENGTH_SHORT).show();
                                                 }
                                                 dialog.dismiss();
@@ -295,12 +361,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError databaseError) {
                                                 dialog.dismiss();
-                                                Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(HomeActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
-                            }
-                            else
-                            {
+                            } else {
                                 dialog.dismiss();
                                 Toast.makeText(HomeActivity.this, "Item doesn't exists!", Toast.LENGTH_SHORT).show();
                             }
@@ -309,22 +373,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             dialog.dismiss();
-                            Toast.makeText(HomeActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(HomeActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
 
         }
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onHideFABCartEvent(HideFABCart event)
-    {
-        if (event.isHidden())
-        {
+    public void onHideFABCartEvent(HideFABCart event) {
+        if (event.isHidden()) {
             fab.hide();
 
-        }
-        else
+        } else
             fab.show();
     }
 
@@ -345,7 +409,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(HomeActivity.this, "[COUNT CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "[COUNT CART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -355,8 +419,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         menuItem.setChecked(true);
         drawer.closeDrawers();
-        switch (menuItem.getItemId())
-        {
+        switch (menuItem.getItemId()) {
             case R.id.nav_home:
                 navController.navigate(R.id.nav_home);
                 break;
