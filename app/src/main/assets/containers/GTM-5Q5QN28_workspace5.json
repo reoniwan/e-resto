@@ -1,0 +1,56 @@
+{
+    "exportFormatVersion": 2,
+    "exportTime": "2019-10-30 03:26:14",
+    "containerVersion": {
+        "path": "accounts/4703147958/containers/13330249/versions/0",
+        "accountId": "4703147958",
+        "containerId": "13330249",
+        "containerVersionId": "0",
+        "container": {
+            "path": "accounts/4703147958/containers/13330249",
+            "accountId": "4703147958",
+            "containerId": "13330249",
+            "name": "com.frozenproject.aplikasipesanmakan",
+            "publicId": "GTM-5Q5QN28",
+            "usageContext": [
+                "ANDROID_SDK_5"
+            ],
+            "fingerprint": "1572405908240",
+            "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/4703147958/containers/13330249/workspaces?apiLink=container"
+        },
+        "builtInVariable": [
+            {
+                "accountId": "4703147958",
+                "containerId": "13330249",
+                "type": "EVENT_NAME",
+                "name": "Event Name"
+            },
+            {
+                "accountId": "4703147958",
+                "containerId": "13330249",
+                "type": "APP_ID",
+                "name": "App ID"
+            },
+            {
+                "accountId": "4703147958",
+                "containerId": "13330249",
+                "type": "APP_NAME",
+                "name": "App Name"
+            },
+            {
+                "accountId": "4703147958",
+                "containerId": "13330249",
+                "type": "APP_VERSION_CODE",
+                "name": "App Version Code"
+            },
+            {
+                "accountId": "4703147958",
+                "containerId": "13330249",
+                "type": "APP_VERSION_NAME",
+                "name": "App Version Name"
+            }
+        ],
+        "fingerprint": "0",
+        "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/4703147958/containers/13330249/versions/0?apiLink=version"
+    }
+}
