@@ -68,6 +68,10 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         return cartItemList.size();
     }
 
+    public CartItem getItemAtPosition(int pos) {
+        return cartItemList.get(pos);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Unbinder unbinder;
 
