@@ -1,5 +1,7 @@
 package com.frozenproject.aplikasipesanmakan.ui.cart;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,7 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +50,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -67,6 +73,56 @@ public class CartFragment extends Fragment {
     TextView txtEmptyCart;
     @BindView(R.id.group_place_holder)
     CardView groupPlaceHolder;
+
+    @OnClick(R.id.btn_place_order)
+    void onPlaceOrderClick(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Satu langkah lagi!");
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_place_order,null);
+
+        EditText edt_address = view.findViewById(R.id.edt_address);
+        RadioButton rdi_home = view.findViewById(R.id.rdi_home_address);
+        RadioButton rdi_other_address = view.findViewById(R.id.rdi_other_address);
+        RadioButton rdi_ship_to_this = view.findViewById(R.id.rdi_ship_to_this);
+        RadioButton rdi_cod = view.findViewById(R.id.rdi_cod);
+        RadioButton rdi_transfer_bank = view.findViewById(R.id.rdi_transfer_bank);
+
+        //Data
+        edt_address.setText(Common.currentUser.getAddress()); //default
+
+        //Event
+        rdi_home.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b)
+            {
+                edt_address.setText(Common.currentUser.getAddress());
+            }
+        });
+        rdi_other_address.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b)
+            {
+                edt_address.setText("");
+//                edt_address.setHint("Enter Your Address");
+            }
+        });
+        rdi_ship_to_this.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b)
+            {
+                Toast.makeText(getContext(),"Implement late with Google API",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setView(view);
+        builder.setNegativeButton("NO", (dialogInterface, i)  -> {
+            dialogInterface.dismiss();
+        }).setPositiveButton("YES", (dialogInterface, i) -> {
+            Toast.makeText(getContext(), "Coming Soon!", Toast.LENGTH_SHORT).show();
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     private MyCartAdapter adapter;
 
@@ -157,7 +213,7 @@ public class CartFragment extends Fragment {
 
                     @Override
                     public void onSuccess(Double aDouble) {
-                        txtTotalPrice.setText(new StringBuilder().append(aDouble));
+                        txtTotalPrice.setText(new StringBuilder("Total: Rp.").append(aDouble));
                     }
 
                     @Override
@@ -270,7 +326,7 @@ public class CartFragment extends Fragment {
 
                     @Override
                     public void onSuccess(Double price) {
-                        txtTotalPrice.setText(new StringBuilder("Total: ")
+                        txtTotalPrice.setText(new StringBuilder("Total: Rp.")
                             .append(Common.formatPrice(price)));
                     }
 
