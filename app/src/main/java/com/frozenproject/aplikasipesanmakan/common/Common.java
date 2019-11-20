@@ -30,6 +30,7 @@ public class Common {
 
     public static CategoryModel categorySelected;
     public static FoodModel selectedFood;
+    public static final String COMMENT_REF = "Comments";
 
     public static Double calculateExtraPrice(SizeModel userSelectedSize, List<AddOnModel> userSelectedAddOn) {
         Double result = 0.0;

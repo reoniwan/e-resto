@@ -7,6 +7,9 @@ public class FoodModel {
     private Long price;
     private List<AddOnModel> addon;
     private List<SizeModel> size;
+    private String key;
+    private Double ratingValue;
+    private Long ratingCount;
 
     //For Cart
     private List<AddOnModel> userSelectedAddOn;
@@ -86,5 +89,29 @@ public class FoodModel {
 
     public void setUserSelectedSize(SizeModel userSelectedSize) {
         this.userSelectedSize = userSelectedSize;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public Double getRatingValue() {
+        return ratingValue;
+    }
+
+    public void setRatingValue(Double ratingValue) {
+        this.ratingValue = ratingValue;
+    }
+
+    public Long getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Long ratingCount) {
+        this.ratingCount = ratingCount;
     }
 }
